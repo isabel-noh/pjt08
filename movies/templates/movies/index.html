@@ -1,5 +1,22 @@
 {% extends 'base.html' %}
 
+
 {% block content %}
   <h1>Movies</h1>
+  {% for movie in movies %}
+    <a href="{% url 'movies:detail' movie.pk %}"> 제목 : {{ movie.title }}</a>
+    <p> 개봉일 : {{ movie.release_date }}</p>
+    <p> 인기 : {{ movie.popularity }}</p>
+    <p> 관객 수 : {{ movie.vote_count }}</p>
+    <p> 평점 : {{ movie.vote_average }}</p>
+    <p> 영화 내용 : {{ movie.overview }}</p>
+    <img src="{{ movie.poster_path }}">
+    <p> 장르 : {{ movie.genres }}</p>
+
+  {% endfor %}
 {% endblock %}
+
+{% block script %}
+  <script>
+  </script>
+{% endblock script %}
