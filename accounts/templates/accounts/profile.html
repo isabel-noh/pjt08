@@ -5,16 +5,17 @@
   {% with followings=person.followings.all followers=person.followers.all %}
     <div>
       <div>
-        팔로잉 : {{ followings|length }} / 팔로워 : {{ followers|length }}
+        팔로잉 : <span id="followingCnt">{{ person.followings.all|length }}</span> / 팔로워 : <span id="followerCnt">{{ person.followers.all|length }}</span>
       </div>
       {% if user != person %}
         <div>
-          <form action="{% url 'accounts:follow' person.pk %}" method="POST">
+          {% comment %} <form action="{% url 'accounts:follow' person.pk %}" method="POST"> {% endcomment %}
+          <form id="follow-form" data-user-id="{{ person.pk }}" >
             {% csrf_token %}
-            {% if user in followers %}
-              <button id="followBtn">언팔로우</button>
+            {% if request.user in person.followers.all %}
+              <button id="followBtn">unfollow</button>
             {% else %}
-              <button id="followBtn">팔로우</button>
+              <button id="followBtn">follow</button>
             {% endif %}
           </form>
         </div>
@@ -22,3 +23,45 @@
     </div>
   {% endwith %}
 {% endblock %}
+{% block script %}
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const form = document.querySelector('#follow-form')
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+    
+
+    form.addEventListener('submit', function(event){
+      event.preventDefault()
+
+      const userId = event.target.dataset.userId
+      axios({
+        method:'post',
+        url:`/accounts/${userId}/follow/`,
+        headers:{'X-CSRFToken':csrftoken}
+      })
+        .then((response) => {
+          const isFollowed = response.data.is_followed
+          const followBtn = document.querySelector('#followBtn')
+          
+          const followingsCountTag = document.querySelector('#followingCnt')
+          const followingsCount = response.data.followings_count
+          followingsCountTag.innerText = followingsCount
+          
+          const followersCountTag = document.querySelector('#followerCnt')
+          const followersCount = response.data.followers_count
+          followersCountTag.innerText = followersCount
+          
+          if (isFollowed===true) {
+            followBtn.innerText = 'unfollow'
+            
+          } else {
+            followBtn.innerText = 'follow'
+          }
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
+    })  
+
+  </script>
+{% endblock script %}
