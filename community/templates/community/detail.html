@@ -17,21 +17,34 @@
   {% endif %}
   {% for comment in comments %}
     <div>
-      <li>
-        {{ comment.user }} - {{ comment.content }} 
-        <button> </button>
+      <form class="like-form" data-commentlike-id="{{comment.pk}}">
+        {% csrf_token %}
+        <li>
+          <span>
+          {{ comment.user }} - {{ comment.content }} 
+          {% if user in comment.commentlike_users.all %}
+            <button id="commentlike-{{comment.pk}}">좋아요 취소</button>
+          {% else %}
+            <button id="commentlike-{{comment.pk}}">좋아요</button>
+          {% endif %}
+          </span>
+          <span id="commentlike-count-{{comment.pk}}"> 
+            좋아요 수 : {{comment.commentlike_users.all|length}}
+          </span>
+        </li>
+      </form>
 
-        
 
-
-      </li>
       <div>
         <form action="" method="POST">
           <input type="text">
           {% csrf_token %}
+          {{secondcomment.user}} - {{ secondcomment }}
           <input type="submit" value="대댓글 작성">
         </form>
       </div>
+
+
     </div>
   {% empty %}
     <p><b>댓글이 없어요..</b></p>
@@ -48,3 +61,39 @@
   {% endif %}
   <a href="{% url 'community:index' %}">[back]</a>
 {% endblock  %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  const comments = document.querySelectorAll('.like-form')
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+  comments.forEach((comment_like) => {
+    comment_like.addEventListener('submit', function (event) {
+      event.preventDefault()
+      const commentId = event.target.dataset.commentlikeId
+      axios({
+        method : 'post',
+        url : `/community/comments/${commentId}/commentlike/`,
+        headers: {'X-CSRFToken':csrftoken,},
+      })
+        .then((response) => {
+          const commentLiked = response.data.is_commentliked
+          const spanTag = document.querySelector(`#commentlike-count-${commentId}`)
+          const commentlikeBtn = document.querySelector(`#commentlike-${commentId}`)
+
+          if (commentLiked === true) {
+            commentlikeBtn.innerText = '좋아요 취소'
+            spanTag.innerText = response.data.count
+          } else {
+            commentlikeBtn.innerText = '좋아요'
+            spanTag.innerText = response.data.count
+          }
+        })
+        .catch((error) => {
+          console.log(error.response)
+        })
+    })
+  })
+
+</script>
+{% endblock script %}

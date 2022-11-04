@@ -13,4 +13,4 @@ class CommentForm(forms.ModelForm):
 
     class Meta:
         model = Comment
-        exclude = ['review', 'user']
+        exclude = ['review', 'user', 'commentlike_users', 'second_comment']
