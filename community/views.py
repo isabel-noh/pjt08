@@ -80,3 +80,24 @@ def like(request, review_pk):
         }
         return JsonResponse(context)
     return redirect('accounts:login')
+
+@require_POST
+def comment_like(request, comment_pk):
+    if request.user.is_authenticated:
+        comment = get_object_or_404(Comment, pk=comment_pk)
+        user = request.user
+
+        if comment.commentlike_users.filter(pk=user.pk).exists():
+            comment.commentlike_users.remove(user)
+            is_commentliked = False
+
+        else:
+            comment.commentlike_users.add(user)
+            is_commentliked = True
+
+        context = {
+            'is_commentliked' : is_commentliked,
+            'count' : comment.commentlike_users.count()
+
+        }
+        return JsonResponse(context)

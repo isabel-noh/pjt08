@@ -17,3 +17,5 @@ class Comment(models.Model):
     content = models.TextField()
     review = models.ForeignKey(Review, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    commentlike_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_comments')
+

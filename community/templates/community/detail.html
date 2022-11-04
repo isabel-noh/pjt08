@@ -17,7 +17,21 @@
   {% endif %}
   {% for comment in comments %}
     <div>
-      {{ comment.user }} - {{ comment.content }}
+      <li>
+        {{ comment.user }} - {{ comment.content }} 
+        <button> </button>
+
+        
+
+
+      </li>
+      <div>
+        <form action="" method="POST">
+          <input type="text">
+          {% csrf_token %}
+          <input type="submit" value="대댓글 작성">
+        </form>
+      </div>
     </div>
   {% empty %}
     <p><b>댓글이 없어요..</b></p>

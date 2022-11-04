@@ -1,4 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
+  {% for movie in movies %}
+  <div class='m-auto justify-content-center'>
+    <p class="pt-3 m-5">{{ movie.title}} </p>
+    <hr>
+    <p class="pt-3 m-5">{{ movie.vote_average}} </p>
+    <hr>
+    <img src="{{ movie.poster_path }}">
+  </div>
+  {% endfor %}
 {% endblock %}
+  
+
+{% block script %}
+{% endblock script %}
