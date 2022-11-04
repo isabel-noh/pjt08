@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
+from django.http import JsonResponse
 from .models import Review, Comment
 from .forms import ReviewForm, CommentForm
 
@@ -69,7 +70,13 @@ def like(request, review_pk):
 
         if review.like_users.filter(pk=user.pk).exists():
             review.like_users.remove(user)
+            is_liked = False
         else:
             review.like_users.add(user)
-        return redirect('community:index')
+            is_liked = True
+        context = {
+            'is_liked' : is_liked,
+            'count' : review.like_users.count()
+        }
+        return JsonResponse(context)
     return redirect('accounts:login')
