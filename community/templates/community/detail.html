@@ -31,24 +31,27 @@
           <span id="commentlike-count-{{comment.pk}}"> 
             좋아요 수 : {{comment.commentlike_users.all|length}}
           </span>
+          {% for second_comment in comment.second_comment.all %}
+          <ul>
+            {{ second_comment.content }} - {{ second_comment.user }}
+          </ul>
+          {% endfor %}
         </li>
       </form>
 
 
-      <div>
-        <form action="" method="POST">
-          <input type="text">
-          {% csrf_token %}
-          {{secondcomment.user}} - {{ secondcomment }}
-          <input type="submit" value="대댓글 작성">
-        </form>
-      </div>
+      <form action="{% url 'community:second_comment' review.pk comment.pk %}" method="POST">
+        {% csrf_token %}
+        {{ second_comment_form.as_p }}
+        <input type="submit" value="대댓글 작성">
+      </form>
 
 
     </div>
   {% empty %}
     <p><b>댓글이 없어요..</b></p>
   {% endfor %}
+
   <hr>
   {% if user.is_authenticated %}
     <form action="{% url 'community:create_comment' review.pk %}" method="POST">

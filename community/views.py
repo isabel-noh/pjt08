@@ -103,7 +103,8 @@ def comment_like(request, comment_pk):
         return JsonResponse(context)
 
 @require_POST
-def second_comment(request, comment_pk):
+def second_comment(request, review_pk, comment_pk):
+    review = get_object_or_404(Review, pk=review_pk)
     comment = get_object_or_404(Comment, pk=comment_pk)
     comment_form = CommentForm(request.POST)
     if comment_form.is_valid():

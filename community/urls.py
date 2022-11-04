@@ -12,7 +12,5 @@ urlpatterns = [
     path('comments/<int:comment_pk>/commentlike/', 
     views.comment_like, name='comment_like'),
 
-
-
     path('comment/<int:comment_pk>/secondcomment/',views.second_comment, name="second_comment")
 ]
