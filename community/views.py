@@ -101,3 +101,20 @@ def comment_like(request, comment_pk):
 
         }
         return JsonResponse(context)
+
+@require_POST
+def second_comment(request, comment_pk):
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    comment_form = CommentForm(request.POST)
+    if comment_form.is_valid():
+        secondcomment = comment_form.save(commit=False)
+        secondcomment.origin_comment = comment
+        secondcomment.user = request.user
+        secondcomment.save()
+        return redirect('community:detail', comment.pk)
+    context = {
+        'comment_form': comment_form,
+        'comment' : comment,
+        'secondcomments' : comment.second_comment.all(),
+    } #related name을 썼으니, set 필요없음
+    return render(request, 'community/detail.html', context)
